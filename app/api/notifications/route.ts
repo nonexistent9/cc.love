@@ -76,11 +76,15 @@ export async function GET(request: NextRequest) {
     // Sort by sentAt timestamp (most recent first)
     allNotifications.sort((a, b) => b.sentAt - a.sentAt);
 
-    console.log(`[Notifications API] Returning ${allNotifications.length} total notifications`);
+    // Limit to last 10 notifications
+    const limitedNotifications = allNotifications.slice(0, 10);
+
+    console.log(`[Notifications API] Found ${allNotifications.length} total notifications, returning last 10`);
 
     return NextResponse.json({
-      notifications: allNotifications,
-      count: allNotifications.length,
+      notifications: limitedNotifications,
+      count: limitedNotifications.length,
+      total: allNotifications.length,
     });
   } catch (error) {
     console.error('Error fetching notifications:', error);
