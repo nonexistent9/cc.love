@@ -61,9 +61,9 @@ export default function Home() {
           color: '#d90429'
         }}>
 
-          <br />
+        
          
-          Got funded? It&apos;s time to get laid lil bro
+          
         </h2>
 
         <br />
@@ -156,12 +156,12 @@ export default function Home() {
           <br />
 
           <p style={{ fontSize: '1.1em' }}>
-            the problem? <strong>i have no rizz.</strong>
+            but i have no rizz. my conversations go nowhere. and i just get ghosted.
           </p>
           <br />
-          
+    
           <p style={{ fontSize: '1.1em' }}>
-            so we&apos;re building the solution. for me. for you. for all of us.
+            so we&apos;re building an ai wingman that helps me land more dates. 
           </p>
           <br />
         </div>
@@ -179,7 +179,7 @@ export default function Home() {
         }}>
 
 <h2 style={{
-            fontSize: '1.5em',
+            fontSize: '1em',
             fontWeight: 'bold',
             color: 'black',
             margin: '20px 0',
@@ -187,7 +187,7 @@ export default function Home() {
             letterSpacing: '1px',
             lineHeight: '1.3'
           }}>
-            This could be you if you use cc.love
+            Hopefully varun after using cc.love
           </h2>
 
           <img 
