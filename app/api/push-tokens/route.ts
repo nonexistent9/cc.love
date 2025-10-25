@@ -28,10 +28,10 @@ export async function POST(request: NextRequest) {
     }, null, 2));
 
     // Save the token
-    upsertToken(tokenData);
+    await upsertToken(tokenData);
 
     // Get updated token count
-    const store = getStoredTokens();
+    const store = await getStoredTokens();
 
     console.log(`[${timestamp}] Token saved successfully. Total tokens: ${store.tokens.length}`);
 
@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
  */
 export async function GET() {
   try {
-    const store = getStoredTokens();
+    const store = await getStoredTokens();
     const timestamp = new Date().toISOString();
 
     console.log(`[${timestamp}] GET /api/push-tokens - Retrieved ${store.tokens.length} tokens`);

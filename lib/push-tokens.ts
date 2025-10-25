@@ -1,5 +1,4 @@
-import fs from 'fs';
-import path from 'path';
+import { redis } from './kv';
 
 export interface PushTokenData {
   token: string;
@@ -13,70 +12,58 @@ export interface TokenStore {
   tokens: PushTokenData[];
 }
 
-// Store tokens in project root (in production, use a database)
-const TOKENS_FILE = path.join(process.cwd(), 'push-tokens.json');
+const REDIS_KEY = 'push-tokens';
 
 /**
- * Get all stored push tokens from file
+ * Get all stored push tokens from Redis
  */
-export function getStoredTokens(): TokenStore {
+export async function getStoredTokens(): Promise<TokenStore> {
   try {
-    if (fs.existsSync(TOKENS_FILE)) {
-      const data = fs.readFileSync(TOKENS_FILE, 'utf-8');
-      return JSON.parse(data);
+    const data = await redis.hgetall(REDIS_KEY);
+
+    if (!data || Object.keys(data).length === 0) {
+      return { tokens: [] };
     }
+
+    const tokens: PushTokenData[] = Object.values(data).map((value) => {
+      if (typeof value === 'string') {
+        return JSON.parse(value);
+      }
+      return value as PushTokenData;
+    });
+
+    return { tokens };
   } catch (error) {
-    console.error('Error reading tokens file:', error);
+    console.error('Error reading tokens from Redis:', error);
+    return { tokens: [] };
   }
-  return { tokens: [] };
 }
 
 /**
- * Save tokens to file
+ * Add or update a push token in Redis
  */
-export function saveTokens(store: TokenStore): void {
+export async function upsertToken(tokenData: PushTokenData): Promise<void> {
   try {
-    fs.writeFileSync(TOKENS_FILE, JSON.stringify(store, null, 2));
+    const dataWithTimestamp = {
+      ...tokenData,
+      timestamp: Date.now(),
+    };
+
+    await redis.hset(REDIS_KEY, {
+      [tokenData.token]: JSON.stringify(dataWithTimestamp),
+    });
+
+    console.log('Token saved to Redis:', tokenData.token);
   } catch (error) {
-    console.error('Error saving tokens file:', error);
+    console.error('Error saving token to Redis:', error);
     throw error;
   }
 }
 
 /**
- * Add or update a push token
- */
-export function upsertToken(tokenData: PushTokenData): void {
-  const store = getStoredTokens();
-
-  // Check if token already exists
-  const existingIndex = store.tokens.findIndex(
-    (t) => t.token === tokenData.token
-  );
-
-  if (existingIndex !== -1) {
-    // Update existing token
-    store.tokens[existingIndex] = {
-      ...tokenData,
-      timestamp: Date.now(),
-    };
-    console.log('Updated existing token:', tokenData.token);
-  } else {
-    // Add new token
-    store.tokens.push({
-      ...tokenData,
-      timestamp: Date.now(),
-    });
-    console.log('Added new token:', tokenData.token);
-  }
-
-  saveTokens(store);
-}
-
-/**
  * Get all valid Expo push tokens
  */
-export function getAllTokens(): string[] {
-  const store = getStoredTokens();
+export async function getAllTokens(): Promise<string[]> {
+  const store = await getStoredTokens();
   return store.tokens.map(t => t.token);
 }

@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
 
     if (body.to === 'all') {
       // Send to all stored tokens
-      targetTokens = getAllTokens();
+      targetTokens = await getAllTokens();
 
       if (targetTokens.length === 0) {
         console.warn(`[${timestamp}] No tokens found in storage`);
