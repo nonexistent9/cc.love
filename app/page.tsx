@@ -1,5 +1,7 @@
 'use client';
 
+import Image from 'next/image';
+
 export default function Home() {
   return (
     <div style={{
@@ -171,6 +173,25 @@ export default function Home() {
 
           <br />
 
+          <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            margin: '10px auto 20px'
+          }}>
+            <Image 
+              src="/IMG_8803.jpeg" 
+              alt="Varun"
+              width={300}
+              height={300}
+              style={{
+                borderRadius: '10px',
+                border: '3px solid #000',
+                objectFit: 'cover'
+              }}
+              priority
+            />
+          </div>
+
           <p style={{ fontSize: '1.1em' }}>
             i&apos;m varun, your usual bay area techbro founder.
           </p>
@@ -204,48 +225,26 @@ export default function Home() {
           <br />
         </div>
 
-        {/* Call to Action */}
+        {/* Launch Announcement */}
         <div style={{
           textAlign: 'center',
-          marginTop: '30px'
+          marginTop: '30px',
+          padding: '30px 20px',
+          backgroundColor: '#fff8e1',
+          border: '3px solid #000',
+          borderRadius: '10px',
+          boxShadow: '4px 4px 0 #000'
         }}>
-          <h3 style={{
-            textAlign: 'center',
-            color: '#d90429'
+          <h2 style={{
+            color: '#d90429',
+            fontSize: '2.5em',
+            fontWeight: 'bold',
+            margin: '0',
+            textTransform: 'uppercase',
+            letterSpacing: '2px'
           }}>
-            Stop swiping with no game.
-          </h3>
-          <br />
-          <a 
-            href="#" 
-            style={{
-              display: 'inline-block',
-              padding: '15px 25px',
-              backgroundColor: '#ffc0cb',
-              border: '3px solid #000',
-              borderRadius: '8px',
-              textDecoration: 'none',
-              color: '#000',
-              fontWeight: 'bold',
-              fontSize: '1.3em',
-              textAlign: 'center',
-              cursor: 'pointer',
-              boxShadow: '4px 4px 0 #000',
-              transition: 'all 0.1s ease-in'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = '#ffb6c1';
-              e.currentTarget.style.boxShadow = '2px 2px 0 #000';
-              e.currentTarget.style.transform = 'translate(2px, 2px)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = '#ffc0cb';
-              e.currentTarget.style.boxShadow = '4px 4px 0 #000';
-              e.currentTarget.style.transform = 'translate(0, 0)';
-            }}
-          >
-            Get Early Access (and get more dates)
-          </a>
+            Launching at 5PM Oct 26th
+          </h2>
         </div>
       </main>
 
