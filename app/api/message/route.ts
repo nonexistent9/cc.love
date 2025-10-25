@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
 
     // Process with Gemini AI
     const { text } = await generateText({
-      model: google('gemini-2.0-flash-exp'),
+      model: google('gemini-2.5-flash'),
       messages: [
         {
           role: 'user',
