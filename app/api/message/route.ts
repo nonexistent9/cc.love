@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generateText, stepCountIs } from "ai";
 import { google } from "@ai-sdk/google";
-import { sendPushNotificationTool } from "@/lib/ai-tools";
+import {
+  sendPushNotificationTool,
+  setNotificationContext,
+} from "@/lib/ai-tools";
 import { buildEnhancedSystemPrompt } from "@/lib/prompts";
 import {
   loadConversationMemory,
@@ -11,6 +14,7 @@ import {
   isScreenshotDuplicate,
 } from "@/lib/conversation-memory";
 import { getConversationId, getDeviceId } from "@/lib/conversation-id";
+import { determineNotificationType } from "@/lib/notification-utils";
 
 export async function POST(request: NextRequest) {
   try {
@@ -77,6 +81,33 @@ export async function POST(request: NextRequest) {
     // Load conversation memory
     const memory = await loadConversationMemory(conversationId, deviceId);
 
+    // GRACE PERIOD: Skip analysis for 60 seconds after sending a notification
+    // This gives the user breathing room to read, think, and implement changes
+    if (memory.notifications.length > 0) {
+      const lastNotification =
+        memory.notifications[memory.notifications.length - 1];
+      const timeSinceLastNotification = Date.now() - lastNotification.sentAt;
+      const gracePeriodMs = 60 * 1000; // 60 seconds
+
+      if (timeSinceLastNotification < gracePeriodMs) {
+        const secondsRemaining = Math.ceil(
+          (gracePeriodMs - timeSinceLastNotification) / 1000,
+        );
+        console.log(
+          `[${receivedAt}] Grace period active - ${secondsRemaining}s remaining. Skipping analysis to give user time to adjust.`,
+        );
+        return NextResponse.json({
+          success: true,
+          skipped: true,
+          reason: `Grace period: ${secondsRemaining}s remaining after last notification`,
+          gracePeriod: true,
+          conversationId,
+          frameNumber: parseInt(frameNumber || "0"),
+          timestamp: parseInt(timestamp || "0"),
+        });
+      }
+    }
+
     // Check for duplicate screenshot
     if (isScreenshotDuplicate(memory, screenshotHash)) {
       console.log(
@@ -94,6 +125,9 @@ export async function POST(request: NextRequest) {
 
     // Build enhanced system prompt with memory context
     const systemPrompt = buildEnhancedSystemPrompt(memory);
+
+    // Set notification context so the tool can enforce cooldown rules
+    setNotificationContext(memory);
 
     // Process with Gemini AI
     const result = await generateText({
@@ -142,6 +176,9 @@ You have access to the sendPushNotificationTool which will allow you to communic
           step.toolCalls?.map((call) => ({
             tool: call.toolName,
             input: call.input,
+            result: step.toolResults?.find(
+              (r) => r.toolCallId === call.toolCallId,
+            ),
           })) || [],
       ) || [];
 
@@ -151,21 +188,34 @@ You have access to the sendPushNotificationTool which will allow you to communic
         JSON.stringify(toolCalls, null, 2),
       );
 
-      // Record notifications in memory
+      // Record notifications that were actually sent (not blocked)
       for (const call of toolCalls) {
         if (call.tool === "sendPushNotification" && call.input) {
           const input = call.input as { title: string; body: string };
+          const callResult = call.result as
+            | { success: boolean; blocked?: boolean }
+            | undefined;
 
-          // Determine notification type from the message content
-          const notificationType = determineNotificationType(input.body);
+          // Only record if the notification was actually sent (not blocked)
+          if (callResult?.success && !callResult?.blocked) {
+            const notificationType = determineNotificationType(input.body);
 
-          await recordNotification(conversationId, deviceId, {
-            type: notificationType,
-            title: input.title,
-            body: input.body,
-            sentAt: Date.now(),
-            triggerReason: text, // Use AI analysis as trigger reason
-          });
+            await recordNotification(conversationId, deviceId, {
+              type: notificationType,
+              title: input.title,
+              body: input.body,
+              sentAt: Date.now(),
+              triggerReason: text, // Use AI analysis as trigger reason
+            });
+
+            console.log(
+              `[${receivedAt}] ✓ Notification sent and recorded: "${notificationType}"`,
+            );
+          } else if (callResult?.blocked) {
+            console.log(
+              `[${receivedAt}] ✗ Notification blocked by spam prevention (cooldown/rate limit)`,
+            );
+          }
         }
       }
     }
@@ -204,36 +254,3 @@ You have access to the sendPushNotificationTool which will allow you to communic
   }
 }
 
-/**
- * Determines the notification type based on the message content
- * This helps categorize notifications for duplicate detection
- */
-function determineNotificationType(messageBody: string): string {
-  const lower = messageBody.toLowerCase();
-
-  if (
-    lower.includes("small talk") ||
-    lower.includes("beating around the bush")
-  ) {
-    return "endless-small-talk";
-  }
-  if (
-    lower.includes("you pick") ||
-    lower.includes("passive") ||
-    lower.includes("decisiveness")
-  ) {
-    return "passive-planning";
-  }
-  if (lower.includes("friendzone") || lower.includes("tame")) {
-    return "friendzone-alert";
-  }
-  if (
-    lower.includes("dumb") ||
-    lower.includes("boring message") ||
-    lower.includes("do not hit send")
-  ) {
-    return "dumb-message";
-  }
-
-  return "general-advice";
-}

@@ -10,7 +10,7 @@ import type {
 /**
  * Hard rule: Don't send the same notification type within this time window
  */
-const NOTIFICATION_COOLDOWN_MS = 15 * 60 * 1000; // 15 minutes
+const NOTIFICATION_COOLDOWN_MS = 5 * 60 * 1000; // 5 minutes
 
 /**
  * Maximum number of messages to keep in memory (keeps memory bounded)
