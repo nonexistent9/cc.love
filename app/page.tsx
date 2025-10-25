@@ -22,21 +22,22 @@ export default function Home() {
         padding: '20px 30px',
         borderRadius: '10px'
       }}>
-        {/* Simple hand-drawn-style heart SVG */}
-        <svg 
-          width="40" 
-          height="40" 
-          viewBox="0 0 24 24" 
-          style={{ 
-            display: 'block', 
-            margin: '0 auto 10px',
-            strokeWidth: '3',
-            stroke: '#d90429',
-            fill: 'none'
-          }}
-        >
-          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-        </svg>
+        {/* Logo */}
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          marginBottom: '30px'
+        }}>
+          <img 
+            src="/Capa_2.png" 
+            alt="cc.love logo"
+            width={120}
+            height={150}
+            style={{
+              objectFit: 'contain'
+            }}
+          />
+        </div>
 
         <h1 style={{
           textAlign: 'center',
@@ -61,81 +62,11 @@ export default function Home() {
         }}>
 
           <br />
+         
           Got funded? It&apos;s time to get laid lil bro
         </h2>
 
         <br />
-
-        
-
-        <p style={{ fontSize: '1.1em' }}>
-          As a man, the odds are stacked against you on dating apps. 
-          </p>
-
-
-        <p style={{ fontSize: '1.1em' }}>
-         Roughly 20% of men get 80% of the matches. 
-
-          </p>
-
-          <br />
-
-          <p style={{ fontSize: '1.1em' }}>
-          
-          The game is rigged. If you wanna compete against the giga chads, you need an edge. 
-         
-        </p>
-
-        <br />
-
-        <p style={{ fontSize: '1.1em' }}>
-        You need <strong>cc.love</strong>
-        </p>
-
-        <br />
-
-        <p style={{ fontSize: '1.1em' }}>
-          We&apos;re the AI wingman that lives on your phone, analyzes profiles, and gives you rizz that actually works. No more &quot;hey&quot;.
-        </p>
-        <br />
-
-        {/* The "This Guys Fucks" Meme Box */}
-        <div style={{
-          border: '3px dashed #000',
-          padding: '10px 20px',
-          textAlign: 'center',
-          margin: '25px auto',
-          backgroundColor: '#f0f0f0',
-          borderRadius: '5px'
-        }}>
-
-<h2 style={{
-            fontSize: '1.5em',
-            fontWeight: 'bold',
-            color: 'black',
-            margin: '20px 0',
-            textTransform: 'uppercase',
-            letterSpacing: '1px',
-            lineHeight: '1.3'
-          }}>
-            This could be you if you use cc.love
-          </h2>
-
-          <img 
-            src="/image.png" 
-            alt="This guy fucks meme from Silicon Valley"
-            style={{
-              width: '100%',
-              maxWidth: '500px',
-              height: 'auto',
-              borderRadius: '5px',
-              margin: '10px 0'
-            }}
-          />
-
-          
-        
-        </div>
 
         <hr style={{
           border: 'none',
@@ -148,7 +79,8 @@ export default function Home() {
           backgroundColor: '#fff8e1',
           padding: '20px',
           border: '2px solid #000',
-          borderRadius: '8px'
+          borderRadius: '8px',
+          marginBottom: '30px'
         }}>
           <h2 style={{
             marginTop: '0',
@@ -208,18 +140,18 @@ export default function Home() {
           </div>
 
           <p style={{ fontSize: '1.1em' }}>
-            i was locked in and grinding for the last two years. building, shipping, raising. but my life was empty.
+            i was locked in and grinding for the last two years. getting a masters degree and starting a startup. but my life was empty.
           </p>
           <br />
 
           <p style={{ fontSize: '1.1em' }}>
-            and i was bugging my co-founder and cto too much. (he has a gf btw).
+            plus i was bugging my co-founder and cto too much. (he has a gf btw).
           </p>
 
           <br />
 
           <p style={{ fontSize: '1.1em' }}>
-            now i&apos;m back on dating apps.
+            so now i&apos;m back on dating apps...before i become an unc.
           </p>
           <br />
 
@@ -232,6 +164,46 @@ export default function Home() {
             so we&apos;re building the solution. for me. for you. for all of us.
           </p>
           <br />
+        </div>
+
+       
+
+        {/* The "This Guys Fucks" Meme Box */}
+        <div style={{
+          border: '3px dashed #000',
+          padding: '10px 20px',
+          textAlign: 'center',
+          margin: '25px auto',
+          backgroundColor: '#f0f0f0',
+          borderRadius: '5px'
+        }}>
+
+<h2 style={{
+            fontSize: '1.5em',
+            fontWeight: 'bold',
+            color: 'black',
+            margin: '20px 0',
+            textTransform: 'uppercase',
+            letterSpacing: '1px',
+            lineHeight: '1.3'
+          }}>
+            This could be you if you use cc.love
+          </h2>
+
+          <img 
+            src="/image.png" 
+            alt="This guy fucks meme from Silicon Valley"
+            style={{
+              width: '100%',
+              maxWidth: '500px',
+              height: 'auto',
+              borderRadius: '5px',
+              margin: '10px 0'
+            }}
+          />
+
+          
+        
         </div>
 
         {/* Launch Announcement */}
