@@ -23,8 +23,14 @@ import { sendNotificationToAll } from "./send-notification";
  * });
  */
 export const sendPushNotificationTool = tool({
-  description:
-    "Sends a push notification to all registered users. Use this when you need to alert or notify all users about important information, updates, or events.",
+  description: `Sends a push notification to all registered users. Use this when you need to alert or notify users about important information, updates, or events.
+
+IMPORTANT: Before using this tool, check the conversation history provided in your system prompt to see if you've already sent a similar notification recently. Only send a notification if:
+1. You haven't sent this type of notification recently, OR
+2. The user has shown improvement but then regressed, OR
+3. The situation has significantly changed and warrants a new notification
+
+Be smart, not spammy. Your goal is to be helpful, not annoying.`,
   inputSchema: z.object({
     title: z
       .string()
