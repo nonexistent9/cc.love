@@ -6,13 +6,16 @@ export default function Home() {
   return (
     <div style={{
       fontFamily: "'Comic Sans MS', 'Chalkboard SE', 'cursive'",
-      backgroundColor: '#fcfcfc',
+      backgroundColor: '#ffffff',
       color: '#333',
-      maxWidth: '700px',
-      margin: '0 auto',
+      minHeight: '100vh',
       padding: '20px',
       lineHeight: '1.6'
     }}>
+      <div style={{
+        maxWidth: '700px',
+        margin: '0 auto'
+      }}>
       <main style={{
         border: '3px solid #000',
         backgroundColor: '#fff',
@@ -105,6 +108,19 @@ export default function Home() {
           backgroundColor: '#f0f0f0',
           borderRadius: '5px'
         }}>
+
+<h2 style={{
+            fontSize: '1.5em',
+            fontWeight: 'bold',
+            color: 'black',
+            margin: '20px 0',
+            textTransform: 'uppercase',
+            letterSpacing: '1px',
+            lineHeight: '1.3'
+          }}>
+            This could be you if you use cc.love
+          </h2>
+
           <img 
             src="/image.png" 
             alt="This guy fucks meme from Silicon Valley"
@@ -117,17 +133,7 @@ export default function Home() {
             }}
           />
 
-          <h2 style={{
-            fontSize: '2em',
-            fontWeight: 'bold',
-            color: '#d90429',
-            margin: '20px 0',
-            textTransform: 'uppercase',
-            letterSpacing: '1px',
-            lineHeight: '1.3'
-          }}>
-            This could be you if you use cc.love
-          </h2>
+          
         
         </div>
 
@@ -173,13 +179,22 @@ export default function Home() {
 
           <br />
 
+        
+
+          <p style={{ fontSize: '1.1em' }}>
+            i&apos;m varun, your usual bay area techbro founder.
+          </p>
+
+          <br />
+
+
           <div style={{
             display: 'flex',
             justifyContent: 'center',
             margin: '10px auto 20px'
           }}>
             <Image 
-              src="/IMG_8803.jpeg" 
+              src="/CleanShot 2025-10-25 at 05.10.22@2x.png" 
               alt="Varun"
               width={300}
               height={300}
@@ -191,12 +206,6 @@ export default function Home() {
               priority
             />
           </div>
-
-          <p style={{ fontSize: '1.1em' }}>
-            i&apos;m varun, your usual bay area techbro founder.
-          </p>
-
-          <br />
 
           <p style={{ fontSize: '1.1em' }}>
             i was locked in and grinding for the last two years. building, shipping, raising. but my life was empty.
@@ -256,6 +265,7 @@ export default function Home() {
       }}>
         <p>&copy; 2025 Cupid Copilot. We are probably not liable if you say something weird.</p>
       </footer>
+      </div>
     </div>
   );
 }
