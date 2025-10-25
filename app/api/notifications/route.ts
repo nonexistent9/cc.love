@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
 
     // Get all conversation IDs for this device
     const userConversationsKey = `user:${deviceId}:conversations`;
-    const conversationIds = await redis.smembers<string>(userConversationsKey);
+    const conversationIds = await redis.smembers<string[]>(userConversationsKey);
 
     if (!conversationIds || conversationIds.length === 0) {
       return NextResponse.json({ notifications: [] });
