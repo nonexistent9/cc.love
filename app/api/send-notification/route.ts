@@ -117,6 +117,8 @@ export async function POST(request: NextRequest) {
     const messages: ExpoPushMessage[] = validTokens.map((token) => ({
       to: token,
       sound: 'default',
+      priority: 'high',
+      badge: 1,
       title: body.title,
       body: body.body,
       data: body.data || {},

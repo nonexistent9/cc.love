@@ -130,6 +130,8 @@ export async function sendNotification(
   const messages: ExpoPushMessage[] = validTokens.map((token) => ({
     to: token,
     sound: "default",
+    priority: "high",
+    badge: 1,
     title: options.title,
     body: options.body,
     data: options.data || {},
