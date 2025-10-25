@@ -7,7 +7,6 @@ import {
   loadConversationMemory,
   saveAnalysisToMemory,
   recordNotification,
-  checkDuplicateRules,
   computeScreenshotHash,
   isScreenshotDuplicate,
 } from "@/lib/conversation-memory";
@@ -24,7 +23,9 @@ export async function POST(request: NextRequest) {
     const format = formData.get("format") as string;
 
     // NEW: Extract optional conversation tracking fields
-    const providedConversationId = formData.get("conversationId") as string | null;
+    const providedConversationId = formData.get("conversationId") as
+      | string
+      | null;
     const providedDeviceId = formData.get("deviceId") as string | null;
 
     if (!frameFile) {
@@ -66,17 +67,21 @@ export async function POST(request: NextRequest) {
     const conversationId = getConversationId(
       providedConversationId || undefined,
       deviceId,
-      parseInt(timestamp) || Date.now()
+      parseInt(timestamp) || Date.now(),
     );
 
-    console.log(`[${receivedAt}] Conversation ID: ${conversationId}, Device ID: ${deviceId}`);
+    console.log(
+      `[${receivedAt}] Conversation ID: ${conversationId}, Device ID: ${deviceId}`,
+    );
 
     // Load conversation memory
     const memory = await loadConversationMemory(conversationId, deviceId);
 
     // Check for duplicate screenshot
     if (isScreenshotDuplicate(memory, screenshotHash)) {
-      console.log(`[${receivedAt}] Duplicate screenshot detected, skipping analysis`);
+      console.log(
+        `[${receivedAt}] Duplicate screenshot detected, skipping analysis`,
+      );
       return NextResponse.json({
         success: true,
         skipped: true,
@@ -136,7 +141,7 @@ You have access to the sendPushNotificationTool which will allow you to communic
         (step) =>
           step.toolCalls?.map((call) => ({
             tool: call.toolName,
-            args: call.args,
+            input: call.input,
           })) || [],
       ) || [];
 
@@ -148,16 +153,16 @@ You have access to the sendPushNotificationTool which will allow you to communic
 
       // Record notifications in memory
       for (const call of toolCalls) {
-        if (call.tool === "sendPushNotification" && call.args) {
-          const args = call.args as { title: string; body: string };
+        if (call.tool === "sendPushNotification" && call.input) {
+          const input = call.input as { title: string; body: string };
 
           // Determine notification type from the message content
-          const notificationType = determineNotificationType(args.body);
+          const notificationType = determineNotificationType(input.body);
 
           await recordNotification(conversationId, deviceId, {
             type: notificationType,
-            title: args.title,
-            body: args.body,
+            title: input.title,
+            body: input.body,
             sentAt: Date.now(),
             triggerReason: text, // Use AI analysis as trigger reason
           });
@@ -178,7 +183,9 @@ You have access to the sendPushNotificationTool which will allow you to communic
       receivedAt,
       memoryStats: {
         messagesInMemory: memory.messages.length + 1,
-        notificationsSent: memory.notifications.length + toolCalls.filter(c => c.tool === "sendPushNotification").length,
+        notificationsSent:
+          memory.notifications.length +
+          toolCalls.filter((c) => c.tool === "sendPushNotification").length,
         conversationState: memory.patterns.currentState,
       },
     });
@@ -204,16 +211,27 @@ You have access to the sendPushNotificationTool which will allow you to communic
 function determineNotificationType(messageBody: string): string {
   const lower = messageBody.toLowerCase();
 
-  if (lower.includes("small talk") || lower.includes("beating around the bush")) {
+  if (
+    lower.includes("small talk") ||
+    lower.includes("beating around the bush")
+  ) {
     return "endless-small-talk";
   }
-  if (lower.includes("you pick") || lower.includes("passive") || lower.includes("decisiveness")) {
+  if (
+    lower.includes("you pick") ||
+    lower.includes("passive") ||
+    lower.includes("decisiveness")
+  ) {
     return "passive-planning";
   }
   if (lower.includes("friendzone") || lower.includes("tame")) {
     return "friendzone-alert";
   }
-  if (lower.includes("dumb") || lower.includes("boring message") || lower.includes("do not hit send")) {
+  if (
+    lower.includes("dumb") ||
+    lower.includes("boring message") ||
+    lower.includes("do not hit send")
+  ) {
     return "dumb-message";
   }
 
