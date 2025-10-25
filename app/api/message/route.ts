@@ -81,33 +81,6 @@ export async function POST(request: NextRequest) {
     // Load conversation memory
     const memory = await loadConversationMemory(conversationId, deviceId);
 
-    // GRACE PERIOD: Skip analysis for 60 seconds after sending a notification
-    // This gives the user breathing room to read, think, and implement changes
-    if (memory.notifications.length > 0) {
-      const lastNotification =
-        memory.notifications[memory.notifications.length - 1];
-      const timeSinceLastNotification = Date.now() - lastNotification.sentAt;
-      const gracePeriodMs = 60 * 1000; // 60 seconds
-
-      if (timeSinceLastNotification < gracePeriodMs) {
-        const secondsRemaining = Math.ceil(
-          (gracePeriodMs - timeSinceLastNotification) / 1000,
-        );
-        console.log(
-          `[${receivedAt}] Grace period active - ${secondsRemaining}s remaining. Skipping analysis to give user time to adjust.`,
-        );
-        return NextResponse.json({
-          success: true,
-          skipped: true,
-          reason: `Grace period: ${secondsRemaining}s remaining after last notification`,
-          gracePeriod: true,
-          conversationId,
-          frameNumber: parseInt(frameNumber || "0"),
-          timestamp: parseInt(timestamp || "0"),
-        });
-      }
-    }
-
     // Check for duplicate screenshot
     if (isScreenshotDuplicate(memory, screenshotHash)) {
       console.log(
@@ -188,16 +161,16 @@ You have access to the sendPushNotificationTool which will allow you to communic
         JSON.stringify(toolCalls, null, 2),
       );
 
-      // Record notifications that were actually sent (not blocked)
+      // Record all notifications that were sent
       for (const call of toolCalls) {
         if (call.tool === "sendPushNotification" && call.input) {
           const input = call.input as { title: string; body: string };
           const callResult = call.result as
-            | { success: boolean; blocked?: boolean }
+            | { success: boolean }
             | undefined;
 
-          // Only record if the notification was actually sent (not blocked)
-          if (callResult?.success && !callResult?.blocked) {
+          // Record if the notification was successfully sent
+          if (callResult?.success) {
             const notificationType = determineNotificationType(input.body);
 
             await recordNotification(conversationId, deviceId, {
@@ -210,10 +183,6 @@ You have access to the sendPushNotificationTool which will allow you to communic
 
             console.log(
               `[${receivedAt}] ✓ Notification sent and recorded: "${notificationType}"`,
-            );
-          } else if (callResult?.blocked) {
-            console.log(
-              `[${receivedAt}] ✗ Notification blocked by spam prevention (cooldown/rate limit)`,
             );
           }
         }
