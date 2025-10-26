@@ -104,9 +104,9 @@ async function saveConversationMemory(
       memory.messages = memory.messages.slice(-MAX_MESSAGES_IN_MEMORY);
     }
     if (memory.notifications.length > MAX_NOTIFICATIONS_IN_MEMORY) {
-      memory.notifications = memory.notifications.slice(
-        -MAX_NOTIFICATIONS_IN_MEMORY
-      );
+      // Sort by sentAt (most recent first) before trimming to ensure we keep the newest ones
+      memory.notifications.sort((a, b) => b.sentAt - a.sentAt);
+      memory.notifications = memory.notifications.slice(0, MAX_NOTIFICATIONS_IN_MEMORY);
     }
 
     // Save to Redis with 7 day expiration
